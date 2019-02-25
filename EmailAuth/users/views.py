@@ -105,7 +105,8 @@ def destroy(request, pk):
 def search(request):
     query = request.GET.get('q')
 
-    goals = Goal.objects.filter(Q(title__icontains = query)| Q(description__icontains = query))
+    goals = Goal.objects.filter(Q(title__icontains = query) | Q(description__icontains = query))
+    goals = goals.filter(user=request.user)
 
     paginator = Paginator(goals, 3)
     page = request.GET.get('page')
