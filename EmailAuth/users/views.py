@@ -32,22 +32,25 @@ def login(request):
 def invalid(request):
     return render(request, 'NOTlogin.html')
 
+@login_required()
 def logout(request):
-    if request.method == 'POST':
-        auth.logout(request)
-        return redirect('login')
+    auth.logout(request)
+    return redirect('login')
 
 @login_required()
 def create(request):
     if request.method == 'POST':
+        print('inside post!')
         form = GoalsForm(request.POST)
         if form.is_valid():
+            print('creating')
             Goal.objects.create(
                 user=request.user,
                 title=form.cleaned_data["title"],
                 description=form.cleaned_data["description"],
             )
-            return redirect('home')
+            print('created')
+            return redirect('/')
     else:
         form = GoalsForm()
     return render(request, 'create.html', {'form':form})
@@ -89,7 +92,7 @@ def update(request, pk):
             goal.title = form.cleaned_data["title"]
             goal.description = form.cleaned_data["description"]
             goal.save()
-            return redirect('home')
+            return redirect('/')
     else:
         form = GoalsForm(initial={'title': goal.title, 'description': goal.description})
     return render(request, 'edit.html', {'form':form})
